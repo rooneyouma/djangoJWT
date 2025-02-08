@@ -20,7 +20,7 @@ This project is a demonstration of Django authentication with JSON Web Tokens (J
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/your-username/djangoJWT.git
+git clone https://github.com/rooneyouma/djangoJWT.git
 cd djangoJWT
 ```
 
