@@ -7,12 +7,13 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <form class="p-4 border rounded shadow-sm bg-light" method='POST'>
+                <form id="signupForm" method="POST" class="p-4 border rounded shadow-sm bg-light">
                     {% csrf_token %}
                     <h1 style="text-align: center;">Sign Up</h1>
+                    
                     <div class="mb-3">
                         <label for="username" class="form-label">Username</label>
-                        {{form.username}}
+                        {{ form.username }}
                         {% if form.username.errors %}
                             <div class="text-danger">
                                 {% for error in form.username.errors %}
@@ -21,9 +22,10 @@
                             </div>
                         {% endif %}
                     </div>
+
                     <div class="mb-3">
-                        <label for="email" class="form-label">Email address</label>
-                        {{form.email}}
+                        <label for="email" class="form-label">Email</label>
+                        {{ form.email }}
                         {% if form.email.errors %}
                             <div class="text-danger">
                                 {% for error in form.email.errors %}
@@ -32,9 +34,10 @@
                             </div>
                         {% endif %}
                     </div>
+
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        {{form.password1}}
+                        <label for="password1" class="form-label">Password</label>
+                        {{ form.password1 }}
                         {% if form.password1.errors %}
                             <div class="text-danger">
                                 {% for error in form.password1.errors %}
@@ -43,9 +46,10 @@
                             </div>
                         {% endif %}
                     </div>
+
                     <div class="mb-3">
-                        <label for="password" class="form-label">Confirm Password</label>
-                        {{form.password2}}
+                        <label for="password2" class="form-label">Confirm Password</label>
+                        {{ form.password2 }}
                         {% if form.password2.errors %}
                             <div class="text-danger">
                                 {% for error in form.password2.errors %}
@@ -54,12 +58,53 @@
                             </div>
                         {% endif %}
                     </div>
-                    <button type="submit" class="btn btn-primary w-100">Submit</button>
-                    <p></p>
-                    <p>Already Have an Account?<a href="{% url 'login' %}">Login</a></p>
+
+                    <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    <div class="mt-3 text-center">
+                        Already have an account? <a href="{% url 'login' %}">Login</a>
+                    </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+document.getElementById('signupForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const data = {
+        username: formData.get('username'),
+        email: formData.get('email'),
+        password: formData.get('password1'),
+    };
+
+    try {
+        const response = await fetch('/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            body: JSON.stringify(data),
+            credentials: 'include'
+        });
+
+        const responseData = await response.json();
+        console.log('Response:', responseData);
+        console.log('Cookies:', document.cookie);  // This will only show non-httpOnly cookies
+
+        if (response.ok) {
+            window.location.href = '/home/';
+        } else {
+            const errorMessages = Object.values(responseData).flat().join('\n');
+            alert('Signup failed:\n' + errorMessages);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during signup');
+    }
+});
+</script>
 {% endblock %}

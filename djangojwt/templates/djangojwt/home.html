@@ -1,8 +1,40 @@
+{% extends 'djangojwt/base.html' %}
 {% block title %}{% endblock %}
 
 {% block content %}
 {% load static %}
-<p>Successfully logged in</p>
-<br>
-<a href="{% url 'logout' %}">Logout</a>
+<div class="container mt-4">
+    {% csrf_token %}
+    <p>Successfully logged in</p>
+    <button id="logoutBtn" class="btn btn-danger">Logout</button>
+</div>
+
+<script>
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    try {
+        console.log('Logging out...');
+        const response = await fetch('/logout/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+
+        const data = await response.json();
+        console.log('Logout response:', data);
+
+        if (response.ok) {
+            console.log('Logout successful, redirecting to login...');
+            window.location.href = '/login/';
+        } else {
+            alert('Logout failed');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('An error occurred during logout');
+    }
+});
+</script>
 {% endblock %}
